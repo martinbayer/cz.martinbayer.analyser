@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Analyser
+Bundle-SymbolicName: cz.martinbayer.analyser
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Export-Package: cz.martinbayer.analyser.processors.model,
+ cz.martinbayer.analyser.processors.types
