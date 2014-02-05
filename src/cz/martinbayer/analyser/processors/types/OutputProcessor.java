@@ -13,6 +13,7 @@ public abstract class OutputProcessor<T extends IXMLog> extends LogProcessor<T> 
 
 	}
 
+	@Override
 	public void finalize() throws Throwable {
 		super.finalize();
 	}
@@ -20,13 +21,16 @@ public abstract class OutputProcessor<T extends IXMLog> extends LogProcessor<T> 
 	/**
 	 * method calls process method
 	 */
+	@Override
 	protected abstract void process();
 
 	/**
 	 * method calls process and createOutput methods
 	 */
+	@Override
 	public void run() {
-
+		process();
+		createOutput();
 	}
 
 	protected abstract void createOutput();

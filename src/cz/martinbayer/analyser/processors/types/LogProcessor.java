@@ -46,4 +46,8 @@ public abstract class LogProcessor<T extends IXMLog> {
 	}
 
 	public abstract String getName();
+
+	public void setNextProcessor(LogProcessor<T> nextProcessor) {
+		this.nextProcessor = nextProcessor;
+	}
 }
