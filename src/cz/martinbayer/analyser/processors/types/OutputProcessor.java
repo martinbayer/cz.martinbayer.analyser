@@ -35,4 +35,14 @@ public abstract class OutputProcessor<T extends IXMLog> extends LogProcessor<T> 
 
 	protected abstract void createOutput();
 
+	@Override
+	protected int getMaxInputs() {
+		return Integer.MAX_VALUE;
+	}
+
+	@Override
+	protected int getMaxOutputs() {
+		// it is last processor in the chain
+		return 0;
+	}
 }
