@@ -1,5 +1,6 @@
 package cz.martinbayer.analyser.processors.types;
 
+import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
 import cz.martinbayer.analyser.processors.model.IXMLog;
 
 /**
@@ -32,11 +33,18 @@ public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 	/**
 	 * method call read() and process() then - result is XMLogData collection
 	 * created
+	 * 
+	 * @throws ProcessorFailedException
 	 */
 	@Override
 	public void run() {
 		read();
 		process();
+		try {
+			runNextProcessor();
+		} catch (ProcessorFailedException e) {
+			logger.error("Unable to run processor", e);
+		}
 	}
 
 	@Override

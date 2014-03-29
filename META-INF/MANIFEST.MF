@@ -7,4 +7,5 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Export-Package: cz.martinbayer.analyser.processors.exception,
  cz.martinbayer.analyser.processors.model,
  cz.martinbayer.analyser.processors.types
-Require-Bundle: cz.martinbayer.externalLibs
+Require-Bundle: cz.martinbayer.externalLibs,
+ cz.martinbayer.utils;bundle-version="1.0.0"
