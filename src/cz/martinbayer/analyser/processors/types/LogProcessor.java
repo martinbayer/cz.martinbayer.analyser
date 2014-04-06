@@ -118,7 +118,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	}
 
 	protected void runNextProcessor() throws ProcessorFailedException {
-		if (nextProcessors.size() > 0
+		if (nextProcessors.size() >= 0
 				&& nextProcessors.size() <= getMaxOutputs()) {
 			for (LogProcessor<T> processor : nextProcessors) {
 				processor.run();

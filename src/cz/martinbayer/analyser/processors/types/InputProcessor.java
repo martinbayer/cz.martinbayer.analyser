@@ -2,6 +2,7 @@ package cz.martinbayer.analyser.processors.types;
 
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
 import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.XMLogData;
 
 /**
  * @author Martin
@@ -11,7 +12,11 @@ import cz.martinbayer.analyser.processors.model.IXMLog;
 public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 
 	public InputProcessor() {
-
+		/**
+		 * do not initialize this collection in different types of processors.
+		 * They must be referenced to not to waste the memory
+		 */
+		logData = new XMLogData<>();
 	}
 
 	@Override
@@ -38,6 +43,7 @@ public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 	 */
 	@Override
 	public void run() {
+		init();
 		read();
 		process();
 		try {
@@ -45,6 +51,13 @@ public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 		} catch (ProcessorFailedException e) {
 			logger.error("Unable to run processor", e);
 		}
+	}
+
+	/**
+	 * Clear data initialized in the previous run
+	 */
+	private void init() {
+		logData.clearAll();
 	}
 
 	@Override

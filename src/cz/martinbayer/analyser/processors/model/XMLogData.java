@@ -41,4 +41,8 @@ public class XMLogData<T extends IXMLog> {
 	public List<T> getLogRecords() {
 		return this.logRecords;
 	}
+
+	public void clearAll() {
+		logRecords.clear();
+	}
 }
