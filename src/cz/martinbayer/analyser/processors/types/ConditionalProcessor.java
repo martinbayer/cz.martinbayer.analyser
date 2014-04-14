@@ -2,6 +2,7 @@ package cz.martinbayer.analyser.processors.types;
 
 import java.util.ArrayList;
 
+import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
 import cz.martinbayer.analyser.processors.model.IXMLog;
 
 /**
@@ -12,6 +13,10 @@ import cz.martinbayer.analyser.processors.model.IXMLog;
 public abstract class ConditionalProcessor<T extends IXMLog> extends
 		LogProcessor<T> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1781470438282424250L;
 	private LogProcessor<T> nextSelectedProcessor = null;
 
 	public ConditionalProcessor() {
@@ -33,10 +38,13 @@ public abstract class ConditionalProcessor<T extends IXMLog> extends
 	/**
 	 * run method calls process which evaluates the conditions and set the
 	 * correct nextProcessor attribute
+	 * 
+	 * @throws ProcessorFailedException
 	 */
 	@Override
-	public void run() {
-
+	public final void run() throws ProcessorFailedException {
+		process();
+		runNextProcessor();
 	}
 
 	/**
@@ -47,6 +55,7 @@ public abstract class ConditionalProcessor<T extends IXMLog> extends
 		nextProcessors.add(processor);
 	}
 
+	@Override
 	public ArrayList<LogProcessor<T>> getNextProcessors() {
 		return nextProcessors;
 	}
@@ -76,11 +85,12 @@ public abstract class ConditionalProcessor<T extends IXMLog> extends
 	}
 
 	@Override
-	protected void runNextProcessor() {
+	protected void runNextProcessor() throws ProcessorFailedException {
 		if (nextSelectedProcessor != null) {
 			nextSelectedProcessor.run();
 		} else {
-			logger.error("Next processor is not selected. Process cannot be completed");
+			throw new ProcessorFailedException(
+					String.format("No next processor selected or no condition passed"));
 		}
 	}
 }

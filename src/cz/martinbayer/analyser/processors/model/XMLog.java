@@ -9,10 +9,6 @@ import java.util.Date;
  */
 public class XMLog implements IXMLog {
 
-	public XMLog() {
-
-	}
-
 	@Override
 	public void finalize() throws Throwable {
 

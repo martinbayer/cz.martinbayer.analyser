@@ -1,7 +1,9 @@
 package cz.martinbayer.analyser.processors.types;
 
+import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,16 +19,21 @@ import cz.martinbayer.utils.model.ObservableModelObject;
  * @created 03-Dec-2013 12:28:40 AM
  */
 public abstract class LogProcessor<T extends IXMLog> extends
-		ObservableModelObject {
+		ObservableModelObject implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3038532642480687700L;
 	public static final String PROPERTY_NAME = "name";
 	public static final String PROPERTY_ENABLED = "enabled";
 	public static final String PROPERTY_NEXT_PROCESSOR_REMOVED = "nextProcessorRemoved";
 	public static final String PROPERTY_NEXT_PROCESSOR_ADDED = "nextProcessorAdded";
 
-	protected Logger logger = LoggerFactory.getLogger(getClass());
+	protected static Logger logger = LoggerFactory
+			.getLogger(LogProcessor.class);
 
-	protected XMLogData<T> logData;
+	protected transient XMLogData<T> logData;
 	protected ArrayList<LogProcessor<T>> nextProcessors = new ArrayList<>();
 
 	private boolean enabled = true;
@@ -49,12 +56,8 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	 */
 	protected abstract void process() throws ProcessorFailedException;
 
-	public void run() {
-		try {
-			process();
-		} catch (ProcessorFailedException e) {
-			logger.error("Unable to process", e);
-		}
+	public void run() throws ProcessorFailedException {
+		process();
 	}
 
 	/**
@@ -73,7 +76,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	}
 
 	public void addNextProcessor(LogProcessor<T> nextProcessor) {
-		if (this.nextProcessors.size() < getMaxOutputs()) {
+		if (getEnabledProcs().size() < getMaxOutputs()) {
 			this.nextProcessors.add(nextProcessor);
 			firePropertyChange(PROPERTY_NEXT_PROCESSOR_ADDED, null,
 					nextProcessor);
@@ -92,7 +95,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	}
 
 	public boolean canAddOutProc() {
-		return nextProcessors.size() < getMaxOutputs();
+		return getEnabledProcs().size() < getMaxOutputs();
 	}
 
 	/*
@@ -121,6 +124,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 		if (nextProcessors.size() >= 0
 				&& nextProcessors.size() <= getMaxOutputs()) {
 			for (LogProcessor<T> processor : nextProcessors) {
+				processor.setLogData(logData);
 				processor.run();
 			}
 		} else {
@@ -132,7 +136,13 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	}
 
 	public boolean removeProcessor(LogProcessor<T> destinationProcessor) {
-		boolean removed = this.nextProcessors.remove(destinationProcessor);
+		boolean removed = false;
+		if (destinationProcessor == null) {
+			removed = this.nextProcessors.size() > 0;
+			this.nextProcessors.clear();
+		} else {
+			removed = this.nextProcessors.remove(destinationProcessor);
+		}
 		if (removed) {
 			firePropertyChange(PROPERTY_NEXT_PROCESSOR_REMOVED, null,
 					destinationProcessor);
@@ -155,5 +165,68 @@ public abstract class LogProcessor<T extends IXMLog> extends
 
 	public boolean isEnabled() {
 		return this.enabled;
+	}
+
+	/**
+	 * Provide basic validation functions which handles only the count of max
+	 * output processors which are enabled
+	 * 
+	 * @return - some StringBuffer value if processor configuration is not
+	 *         valid. If the StringBuffer is NULL then it is said to be valid
+	 */
+	public final StringBuffer isValid() {
+		List<LogProcessor<T>> enabledProcs = getEnabledProcs();
+		if (enabledProcs.size() <= getMaxOutputs()) {
+			return null;
+		}
+		StringBuffer message = new StringBuffer();
+		message.append("Too much output processors enabled for ")
+				.append(getName())
+				.append(". Disable or delete one of the following processor(s):");
+		message.append(LogProcessor.getProcessorNames(enabledProcs));
+		return message;
+	}
+
+	private ArrayList<LogProcessor<T>> getEnabledProcs() {
+		if (nextProcessors == null || nextProcessors.size() <= 0) {
+			return new ArrayList<>();
+		}
+		ArrayList<LogProcessor<T>> enabledProcs = new ArrayList<>();
+		for (LogProcessor<T> proc : nextProcessors) {
+			if (proc.isEnabled()) {
+				enabledProcs.add(proc);
+			}
+		}
+		return enabledProcs;
+	}
+
+	/**
+	 * Method can be overrided to get some specific processor's validation.
+	 * Default implementation returns null which means that processor is valid.
+	 * Both {@link #isValid()} and {@link #isSubProcessorValid()} must return
+	 * null to
+	 * 
+	 * @return - some StringBuffer value if processor configuration is not
+	 *         valid. If the StringBuffer is NULL then it is said to be valid
+	 */
+	protected StringBuffer isSubProcessorValid() {
+		return null;
+	}
+
+	public abstract void init();
+
+	/**
+	 * Returns names of processors separated by ';'
+	 * 
+	 * @param procs
+	 * @return
+	 */
+	public static <T extends IXMLog> StringBuffer getProcessorNames(
+			List<LogProcessor<T>> procs) {
+		StringBuffer sb = new StringBuffer();
+		for (LogProcessor<T> proc : procs) {
+			sb.append(proc.getName()).append("; ");
+		}
+		return sb;
 	}
 }

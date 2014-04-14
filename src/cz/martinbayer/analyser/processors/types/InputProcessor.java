@@ -11,12 +11,14 @@ import cz.martinbayer.analyser.processors.model.XMLogData;
  */
 public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3276899117442053090L;
+
 	public InputProcessor() {
-		/**
-		 * do not initialize this collection in different types of processors.
-		 * They must be referenced to not to waste the memory
-		 */
-		logData = new XMLogData<>();
+		super();
+		init();
 	}
 
 	@Override
@@ -42,21 +44,24 @@ public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 	 * @throws ProcessorFailedException
 	 */
 	@Override
-	public void run() {
-		init();
+	public final void run() throws ProcessorFailedException {
 		read();
 		process();
-		try {
-			runNextProcessor();
-		} catch (ProcessorFailedException e) {
-			logger.error("Unable to run processor", e);
-		}
+		runNextProcessor();
 	}
 
 	/**
 	 * Clear data initialized in the previous run
 	 */
-	private void init() {
+	@Override
+	public void init() {
+		/**
+		 * do not initialize this collection in different types of processors.
+		 * They must be referenced to not to waste the memory
+		 */
+		if (logData == null) {
+			logData = new XMLogData<>();
+		}
 		logData.clearAll();
 	}
 

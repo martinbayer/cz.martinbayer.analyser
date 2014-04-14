@@ -9,6 +9,11 @@ import cz.martinbayer.analyser.processors.model.IXMLog;
  */
 public abstract class OutputProcessor<T extends IXMLog> extends LogProcessor<T> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6526219085435019172L;
+
 	public OutputProcessor() {
 
 	}
@@ -28,7 +33,7 @@ public abstract class OutputProcessor<T extends IXMLog> extends LogProcessor<T> 
 	 * method calls process and createOutput methods
 	 */
 	@Override
-	public void run() {
+	public final void run() {
 		process();
 		createOutput();
 	}
