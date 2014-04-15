@@ -78,6 +78,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	public void addNextProcessor(LogProcessor<T> nextProcessor) {
 		if (getEnabledProcs().size() < getMaxOutputs()) {
 			this.nextProcessors.add(nextProcessor);
+			logger.info("Processor {} added to {}.", nextProcessor, this);
 			firePropertyChange(PROPERTY_NEXT_PROCESSOR_ADDED, null,
 					nextProcessor);
 		} else {
@@ -137,6 +138,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 
 	public boolean removeProcessor(LogProcessor<T> destinationProcessor) {
 		boolean removed = false;
+		logger.info("Removing processor {} from {}", destinationProcessor, this);
 		if (destinationProcessor == null) {
 			removed = this.nextProcessors.size() > 0;
 			this.nextProcessors.clear();
@@ -177,17 +179,20 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	public final StringBuffer isValid() {
 		List<LogProcessor<T>> enabledProcs = getEnabledProcs();
 		if (enabledProcs.size() <= getMaxOutputs()) {
-			return null;
+			/* check processor specific validity */
+			return isSubProcessorValid();
 		}
 		StringBuffer message = new StringBuffer();
 		message.append("Too much output processors enabled for ")
 				.append(getName())
 				.append(". Disable or delete one of the following processor(s):");
 		message.append(LogProcessor.getProcessorNames(enabledProcs));
+		/* check processor specific validity */
+		message.append(isSubProcessorValid());
 		return message;
 	}
 
-	private ArrayList<LogProcessor<T>> getEnabledProcs() {
+	public ArrayList<LogProcessor<T>> getEnabledProcs() {
 		if (nextProcessors == null || nextProcessors.size() <= 0) {
 			return new ArrayList<>();
 		}
@@ -214,6 +219,11 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	}
 
 	public abstract void init();
+
+	@Override
+	public String toString() {
+		return String.format("%s [%s]", getClass().getName(), getName());
+	}
 
 	/**
 	 * Returns names of processors separated by ';'

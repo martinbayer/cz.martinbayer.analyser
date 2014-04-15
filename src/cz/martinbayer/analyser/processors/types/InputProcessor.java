@@ -45,6 +45,8 @@ public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 	 */
 	@Override
 	public final void run() throws ProcessorFailedException {
+		/* clear data from previous run */
+		logData.clearAll();
 		read();
 		process();
 		runNextProcessor();

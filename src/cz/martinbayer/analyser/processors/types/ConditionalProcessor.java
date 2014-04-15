@@ -17,7 +17,7 @@ public abstract class ConditionalProcessor<T extends IXMLog> extends
 	 * 
 	 */
 	private static final long serialVersionUID = 1781470438282424250L;
-	private LogProcessor<T> nextSelectedProcessor = null;
+	protected LogProcessor<T> nextSelectedProcessor = null;
 
 	public ConditionalProcessor() {
 
@@ -71,26 +71,16 @@ public abstract class ConditionalProcessor<T extends IXMLog> extends
 		return Integer.MAX_VALUE;
 	}
 
-	/**
-	 * there should be one processor selected which should gain the actual
-	 * processing data
-	 */
-	@Override
-	protected void setDataForProcessing() {
-		if (logData != null && nextSelectedProcessor != null) {
-			nextSelectedProcessor.setLogData(logData);
-		} else {
-			logger.warn("No processor is selected for conditional processor. Data cennot be set.");
-		}
-	}
-
 	@Override
 	protected void runNextProcessor() throws ProcessorFailedException {
 		if (nextSelectedProcessor != null) {
+			nextSelectedProcessor.setLogData(logData);
 			nextSelectedProcessor.run();
 		} else {
 			throw new ProcessorFailedException(
-					String.format("No next processor selected or no condition passed"));
+					String.format(
+							"No next processor selected or no condition passed on processor %s",
+							getName()));
 		}
 	}
 }
