@@ -7,7 +7,7 @@ import java.util.Date;
  * @version 1.0
  * @created 03-Dec-2013 12:28:43 AM
  */
-public class XMLog implements IXMLog {
+public class E4LogsisLog implements IE4LogsisLog {
 
 	@Override
 	public void finalize() throws Throwable {
@@ -24,7 +24,7 @@ public class XMLog implements IXMLog {
 	}
 
 	@Override
-	public String getText() {
+	public String getMessage() {
 		return "";
 	}
 
@@ -47,7 +47,7 @@ public class XMLog implements IXMLog {
 	 * @param text
 	 */
 	@Override
-	public void setText(String text) {
+	public void setMessage(String text) {
 
 	}
 

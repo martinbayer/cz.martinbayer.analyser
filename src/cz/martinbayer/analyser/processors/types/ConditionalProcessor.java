@@ -3,14 +3,14 @@ package cz.martinbayer.analyser.processors.types;
 import java.util.ArrayList;
 
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 
 /**
  * @author Martin
  * @version 1.0
  * @created 03-Dec-2013 12:28:37 AM
  */
-public abstract class ConditionalProcessor<T extends IXMLog> extends
+public abstract class ConditionalProcessor<T extends IE4LogsisLog> extends
 		LogProcessor<T> {
 
 	/**

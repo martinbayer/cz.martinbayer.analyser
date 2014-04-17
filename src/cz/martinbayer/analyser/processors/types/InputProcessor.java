@@ -1,15 +1,15 @@
 package cz.martinbayer.analyser.processors.types;
 
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
-import cz.martinbayer.analyser.processors.model.IXMLog;
-import cz.martinbayer.analyser.processors.model.XMLogData;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
+import cz.martinbayer.analyser.processors.model.E4LogsisLogData;
 
 /**
  * @author Martin
  * @version 1.0
  * @created 03-Dec-2013 12:28:39 AM
  */
-public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
+public abstract class InputProcessor<T extends IE4LogsisLog> extends LogProcessor<T> {
 
 	/**
 	 * 
@@ -62,7 +62,7 @@ public abstract class InputProcessor<T extends IXMLog> extends LogProcessor<T> {
 		 * They must be referenced to not to waste the memory
 		 */
 		if (logData == null) {
-			logData = new XMLogData<>();
+			logData = new E4LogsisLogData<>();
 		}
 		logData.clearAll();
 	}

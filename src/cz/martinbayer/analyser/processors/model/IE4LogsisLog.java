@@ -5,11 +5,11 @@ package cz.martinbayer.analyser.processors.model;
  * @version 1.0
  * @created 03-Dec-2013 12:28:43 AM
  */
-public interface IXMLog {
+public interface IE4LogsisLog {
 
 	public ELogLevel getLogLevel();
 
-	public String getText();
+	public String getMessage();
 
 	public boolean isRemoved();
 
@@ -17,5 +17,5 @@ public interface IXMLog {
 
 	public void setLogLevel(ELogLevel logLevel);
 
-	public void setText(String text);
+	public void setMessage(String message);
 }

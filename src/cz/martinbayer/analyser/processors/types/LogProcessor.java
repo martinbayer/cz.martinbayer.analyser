@@ -9,8 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
-import cz.martinbayer.analyser.processors.model.IXMLog;
-import cz.martinbayer.analyser.processors.model.XMLogData;
+import cz.martinbayer.analyser.processors.model.E4LogsisLogData;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.utils.model.ObservableModelObject;
 
 /**
@@ -18,7 +18,7 @@ import cz.martinbayer.utils.model.ObservableModelObject;
  * @version 1.0
  * @created 03-Dec-2013 12:28:40 AM
  */
-public abstract class LogProcessor<T extends IXMLog> extends
+public abstract class LogProcessor<T extends IE4LogsisLog> extends
 		ObservableModelObject implements Serializable {
 
 	/**
@@ -33,7 +33,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	protected static Logger logger = LoggerFactory
 			.getLogger(LogProcessor.class);
 
-	protected transient XMLogData<T> logData;
+	protected transient E4LogsisLogData<T> logData;
 	protected ArrayList<LogProcessor<T>> nextProcessors = new ArrayList<>();
 
 	private boolean enabled = true;
@@ -43,7 +43,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	/**
 	 * @param logData
 	 */
-	public LogProcessor(XMLogData<T> logData) {
+	public LogProcessor(E4LogsisLogData<T> logData) {
 		this.logData = logData;
 	}
 
@@ -63,7 +63,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	/**
 	 * @param logData
 	 */
-	public void setLogData(XMLogData<T> logData) {
+	public void setLogData(E4LogsisLogData<T> logData) {
 		this.logData = logData;
 	}
 
@@ -113,18 +113,18 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	 * output processors selected only
 	 */
 	protected void setDataForProcessing() {
-		if (logData != null && nextProcessors.size() > 0
-				&& nextProcessors.size() <= getMaxOutputs()) {
-			for (LogProcessor<T> processor : nextProcessors) {
+		if (logData != null && getEnabledProcs().size() > 0
+				&& getEnabledProcs().size() <= getMaxOutputs()) {
+			for (LogProcessor<T> processor : getEnabledProcs()) {
 				processor.setLogData(logData);
 			}
 		}
 	}
 
 	protected void runNextProcessor() throws ProcessorFailedException {
-		if (nextProcessors.size() >= 0
-				&& nextProcessors.size() <= getMaxOutputs()) {
-			for (LogProcessor<T> processor : nextProcessors) {
+		if (getEnabledProcs().size() >= 0
+				&& getEnabledProcs().size() <= getMaxOutputs()) {
+			for (LogProcessor<T> processor : getEnabledProcs()) {
 				processor.setLogData(logData);
 				processor.run();
 			}
@@ -132,7 +132,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 			throw new ProcessorFailedException(
 					String.format(
 							"Incorrect count of output processors. Actual count: %d. Max count: %d.",
-							nextProcessors.size(), getMaxOutputs()));
+							getEnabledProcs().size(), getMaxOutputs()));
 		}
 	}
 
@@ -231,7 +231,7 @@ public abstract class LogProcessor<T extends IXMLog> extends
 	 * @param procs
 	 * @return
 	 */
-	public static <T extends IXMLog> StringBuffer getProcessorNames(
+	public static <T extends IE4LogsisLog> StringBuffer getProcessorNames(
 			List<LogProcessor<T>> procs) {
 		StringBuffer sb = new StringBuffer();
 		for (LogProcessor<T> proc : procs) {

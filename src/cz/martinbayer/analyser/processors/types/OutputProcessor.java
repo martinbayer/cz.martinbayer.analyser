@@ -1,13 +1,13 @@
 package cz.martinbayer.analyser.processors.types;
 
-import cz.martinbayer.analyser.processors.model.IXMLog;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 
 /**
  * @author Martin
  * @version 1.0
  * @created 03-Dec-2013 12:28:41 AM
  */
-public abstract class OutputProcessor<T extends IXMLog> extends LogProcessor<T> {
+public abstract class OutputProcessor<T extends IE4LogsisLog> extends LogProcessor<T> {
 
 	/**
 	 * 

@@ -8,11 +8,11 @@ import java.util.List;
  * @version 1.0
  * @created 03-Dec-2013 12:28:44 AM
  */
-public class XMLogData<T extends IXMLog> {
+public class E4LogsisLogData<T extends IE4LogsisLog> {
 
 	private List<T> logRecords = new ArrayList<>();
 
-	public XMLogData() {
+	public E4LogsisLogData() {
 
 	}
 
