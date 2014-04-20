@@ -45,4 +45,14 @@ public class E4LogsisLogData<T extends IE4LogsisLog> {
 	public void clearAll() {
 		logRecords.clear();
 	}
+
+	/**
+	 * All records previously marked as removed are set to not to be removed
+	 * anymore
+	 */
+	public void reset() {
+		for (T record : logRecords) {
+			record.setRemoved(false);
+		}
+	}
 }

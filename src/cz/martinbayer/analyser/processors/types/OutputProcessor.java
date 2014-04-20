@@ -7,7 +7,8 @@ import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
  * @version 1.0
  * @created 03-Dec-2013 12:28:41 AM
  */
-public abstract class OutputProcessor<T extends IE4LogsisLog> extends LogProcessor<T> {
+public abstract class OutputProcessor<T extends IE4LogsisLog> extends
+		LogProcessor<T> {
 
 	/**
 	 * 
@@ -36,9 +37,12 @@ public abstract class OutputProcessor<T extends IE4LogsisLog> extends LogProcess
 	public final void run() {
 		process();
 		createOutput();
+		showResult();
 	}
 
 	protected abstract void createOutput();
+
+	protected abstract void showResult();
 
 	@Override
 	protected int getMaxInputs() {

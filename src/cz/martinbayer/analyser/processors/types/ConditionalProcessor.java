@@ -43,6 +43,11 @@ public abstract class ConditionalProcessor<T extends IE4LogsisLog> extends
 	 */
 	@Override
 	public final void run() throws ProcessorFailedException {
+		/*
+		 * set nextSelectedProcessor to null to avoid running the same processor
+		 * even if no condition passed
+		 */
+		nextSelectedProcessor = null;
 		process();
 		runNextProcessor();
 	}

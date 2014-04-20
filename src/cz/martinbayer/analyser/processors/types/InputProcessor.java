@@ -1,20 +1,22 @@
 package cz.martinbayer.analyser.processors.types;
 
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
-import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 import cz.martinbayer.analyser.processors.model.E4LogsisLogData;
+import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
 
 /**
  * @author Martin
  * @version 1.0
  * @created 03-Dec-2013 12:28:39 AM
  */
-public abstract class InputProcessor<T extends IE4LogsisLog> extends LogProcessor<T> {
+public abstract class InputProcessor<T extends IE4LogsisLog> extends
+		LogProcessor<T> {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -3276899117442053090L;
+	private boolean usePreviousData;
 
 	public InputProcessor() {
 		super();
@@ -46,8 +48,13 @@ public abstract class InputProcessor<T extends IE4LogsisLog> extends LogProcesso
 	@Override
 	public final void run() throws ProcessorFailedException {
 		/* clear data from previous run */
-		logData.clearAll();
-		read();
+		if (!usePreviousData || logData.getLogRecords().size() == 0) {
+			logData.clearAll();
+			read();
+		} else {
+			/* all 'removed' data set to 'not removed' */
+			logData.reset();
+		}
 		process();
 		runNextProcessor();
 	}
@@ -77,5 +84,25 @@ public abstract class InputProcessor<T extends IE4LogsisLog> extends LogProcesso
 	protected int getMaxOutputs() {
 		// only conditions can have more outputs
 		return 1;
+	}
+
+	/**
+	 * run method is called immediatelly
+	 * 
+	 * @param usePreviousData
+	 * @throws ProcessorFailedException
+	 */
+	public void run(boolean usePreviousData) throws ProcessorFailedException {
+		this.usePreviousData = usePreviousData;
+		run();
+	}
+
+	/**
+	 * All records removed from the collection
+	 */
+	public void clearData() {
+		if (this.logData != null) {
+			logData.clearAll();
+		}
 	}
 }
