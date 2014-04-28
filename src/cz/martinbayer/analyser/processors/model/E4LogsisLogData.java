@@ -2,6 +2,7 @@ package cz.martinbayer.analyser.processors.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @author Martin
@@ -11,39 +12,37 @@ import java.util.List;
 public class E4LogsisLogData<T extends IE4LogsisLog> {
 
 	private List<T> logRecords = new ArrayList<>();
-
-	public E4LogsisLogData() {
-
-	}
+	private List<T> removedRecords = new ArrayList<>();
 
 	public void addLogRecord(T logRecord) {
 		this.logRecords.add(logRecord);
 	}
 
+	/**
+	 * Remove actual records and replace them with logRecords in parameter
+	 * 
+	 * @param logRecords
+	 */
 	public void replaceLogRecords(List<T> logRecords) {
 		this.logRecords.clear();
-		this.logRecords.addAll(logRecords);
+		addLogRecords(logRecords);
 	}
 
+	/**
+	 * Add more log records
+	 */
 	public void addLogRecords(List<T> logRecords) {
 		this.logRecords.addAll(logRecords);
 	}
 
-	public T removeLogRecord(T logRecord) {
-		int index = this.logRecords.indexOf(logRecord);
-		if (index >= 0) {
-			this.logRecords.get(index).setRemoved(true);
-			return this.logRecords.get(index);
-		}
-		return null;
-	}
-
 	public List<T> getLogRecords() {
+		applyPreviousRemoves();
 		return this.logRecords;
 	}
 
 	public void clearAll() {
 		logRecords.clear();
+		removedRecords.clear();
 	}
 
 	/**
@@ -51,8 +50,41 @@ public class E4LogsisLogData<T extends IE4LogsisLog> {
 	 * anymore
 	 */
 	public void reset() {
-		for (T record : logRecords) {
-			record.setRemoved(false);
+		/*
+		 * move all records from removedRecords to logRecords and then set them
+		 * all to not to be removed
+		 */
+		logRecords.addAll(removedRecords);
+		removedRecords.clear();
+		for (int i = 0; i < logRecords.size(); i++) {
+			logRecords.get(i).setRemoved(false);
 		}
+	}
+
+	/**
+	 * If there was some previously removed data, move them to removed data
+	 * collection and vice versa
+	 */
+	private void applyPreviousRemoves() {
+		ListIterator<T> logRecsIt = logRecords.listIterator();
+		T record = null;
+		while (logRecsIt.hasNext()) {
+			record = logRecsIt.next();
+			if (record.isRemoved()) {
+				removedRecords.add(record);
+				logRecsIt.remove();
+			}
+		}
+	}
+
+	/**
+	 * Total count of logRecords and removedRecords(actually filtered records
+	 * which are returned to the collection of all records when the processing
+	 * is started again)
+	 * 
+	 * @return
+	 */
+	public int getSize() {
+		return logRecords.size() + removedRecords.size();
 	}
 }

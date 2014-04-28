@@ -19,7 +19,6 @@ public abstract class InputProcessor<T extends IE4LogsisLog> extends
 	private boolean usePreviousData;
 
 	public InputProcessor() {
-		super();
 		init();
 	}
 
@@ -48,7 +47,7 @@ public abstract class InputProcessor<T extends IE4LogsisLog> extends
 	@Override
 	public final void run() throws ProcessorFailedException {
 		/* clear data from previous run */
-		if (!usePreviousData || logData.getLogRecords().size() == 0) {
+		if (!usePreviousData || logData.getSize() == 0) {
 			logData.clearAll();
 			read();
 		} else {

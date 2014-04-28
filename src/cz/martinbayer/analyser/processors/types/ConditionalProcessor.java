@@ -57,6 +57,7 @@ public abstract class ConditionalProcessor<T extends IE4LogsisLog> extends
 	 */
 	@Override
 	public void addNextProcessor(LogProcessor<T> processor) {
+		processor.setStatusListener(listener);
 		nextProcessors.add(processor);
 	}
 

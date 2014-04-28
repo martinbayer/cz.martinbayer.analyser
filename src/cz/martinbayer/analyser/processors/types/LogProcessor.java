@@ -8,6 +8,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cz.martinbayer.analyser.processors.events.IProcessorStatusListener;
+import cz.martinbayer.analyser.processors.events.ProcessorStatus;
+import cz.martinbayer.analyser.processors.events.StatusEvent;
 import cz.martinbayer.analyser.processors.exception.ProcessorFailedException;
 import cz.martinbayer.analyser.processors.model.E4LogsisLogData;
 import cz.martinbayer.analyser.processors.model.IE4LogsisLog;
@@ -19,7 +22,7 @@ import cz.martinbayer.utils.model.ObservableModelObject;
  * @created 03-Dec-2013 12:28:40 AM
  */
 public abstract class LogProcessor<T extends IE4LogsisLog> extends
-		ObservableModelObject implements Serializable {
+		ObservableModelObject implements Serializable, Cancelable {
 
 	/**
 	 * 
@@ -39,6 +42,7 @@ public abstract class LogProcessor<T extends IE4LogsisLog> extends
 	private boolean enabled = true;
 
 	private String name;
+	protected transient IProcessorStatusListener listener;
 
 	/**
 	 * @param logData
@@ -48,7 +52,6 @@ public abstract class LogProcessor<T extends IE4LogsisLog> extends
 	}
 
 	public LogProcessor() {
-
 	}
 
 	/**
@@ -77,6 +80,7 @@ public abstract class LogProcessor<T extends IE4LogsisLog> extends
 
 	public void addNextProcessor(LogProcessor<T> nextProcessor) {
 		if (getEnabledProcs().size() < getMaxOutputs()) {
+			nextProcessor.setStatusListener(listener);
 			this.nextProcessors.add(nextProcessor);
 			logger.info("Processor {} added to {}.", nextProcessor, this);
 			firePropertyChange(PROPERTY_NEXT_PROCESSOR_ADDED, null,
@@ -144,6 +148,7 @@ public abstract class LogProcessor<T extends IE4LogsisLog> extends
 			this.nextProcessors.clear();
 		} else {
 			removed = this.nextProcessors.remove(destinationProcessor);
+			destinationProcessor.setStatusListener(null);
 		}
 		if (removed) {
 			firePropertyChange(PROPERTY_NEXT_PROCESSOR_REMOVED, null,
@@ -238,5 +243,24 @@ public abstract class LogProcessor<T extends IE4LogsisLog> extends
 			sb.append(proc.getName()).append("; ");
 		}
 		return sb;
+	}
+
+	public final void setStatusListener(IProcessorStatusListener listener) {
+		this.listener = listener;
+	}
+
+	public final void submitState(String message) {
+		if (this.listener == null) {
+			return;
+		}
+		this.listener.stateSubmitted(new StatusEvent(this, new ProcessorStatus(
+				message)));
+	}
+
+	@Override
+	public void cancel() {
+		for (LogProcessor<T> proc : nextProcessors) {
+			proc.cancel();
+		}
 	}
 }

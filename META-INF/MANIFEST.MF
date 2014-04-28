@@ -4,7 +4,8 @@ Bundle-Name: Analyser
 Bundle-SymbolicName: cz.martinbayer.analyser
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: cz.martinbayer.analyser.processors.exception,
+Export-Package: cz.martinbayer.analyser.processors.events,
+ cz.martinbayer.analyser.processors.exception,
  cz.martinbayer.analyser.processors.model,
  cz.martinbayer.analyser.processors.types
 Require-Bundle: cz.martinbayer.externalLibs,

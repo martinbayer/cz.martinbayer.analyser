@@ -1,5 +1,5 @@
 package cz.martinbayer.analyser.processors.model;
 
 public enum ELogLevel {
-	WARN, DEBUG, INFO, ERROR, TRACE, FATAL
+	ALL, TRACE, DEBUG, INFO, WARN, ERROR, FATAL
 }

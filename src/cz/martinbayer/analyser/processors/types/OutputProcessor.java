@@ -15,10 +15,6 @@ public abstract class OutputProcessor<T extends IE4LogsisLog> extends
 	 */
 	private static final long serialVersionUID = 6526219085435019172L;
 
-	public OutputProcessor() {
-
-	}
-
 	@Override
 	public void finalize() throws Throwable {
 		super.finalize();
@@ -37,7 +33,15 @@ public abstract class OutputProcessor<T extends IE4LogsisLog> extends
 	public final void run() {
 		process();
 		createOutput();
-		showResult();
+		/* show results in separate thread and finish processing */
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				showResult();
+			}
+		});
+		t.setDaemon(true);
+		t.start();
 	}
 
 	protected abstract void createOutput();

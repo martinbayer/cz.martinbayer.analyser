@@ -7,15 +7,19 @@ package cz.martinbayer.analyser.processors.model;
  */
 public interface IE4LogsisLog {
 
-	public ELogLevel getLogLevel();
+	ELogLevel getLogLevel();
 
-	public String getMessage();
+	String getMessage();
 
-	public boolean isRemoved();
+	boolean isRemoved();
 
-	public void setRemoved(boolean removed);
+	void setRemoved(boolean removed);
 
-	public void setLogLevel(ELogLevel logLevel);
+	void setLogLevel(ELogLevel logLevel);
 
-	public void setMessage(String message);
+	void setMessage(String message);
+
+	boolean addLogRemovedListener(ILogRemovedListener listener);
+
+	boolean removeLogRemovedListener(ILogRemovedListener listener);
 }
